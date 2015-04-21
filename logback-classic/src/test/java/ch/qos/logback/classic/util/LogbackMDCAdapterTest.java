@@ -67,7 +67,7 @@ public class LogbackMDCAdapterTest {
   @Test
   public void sequenceWithGet() {
     mdcAdapter.put("k0", "v0");
-    Map<String, String> map0 = mdcAdapter.copyOnInheritThreadLocal.get();
+    Map<String, String> map0 = mdcAdapter.mdcThreadLocal.get();
     mdcAdapter.get("k0");  // point 0
     mdcAdapter.put("k0", "v1");
     // verify that map0 is that in point 0
@@ -150,7 +150,7 @@ public class LogbackMDCAdapterTest {
   public void nearSimultaneousPutsShouldNotCauseConcurrentModificationException() throws InterruptedException {
     // For the weirdest reason, modifications to mdcAdapter must be done
     // before the definition anonymous ChildThread class below. Otherwise, the
-    // map in the child thread, the one contained in mdcAdapter.copyOnInheritThreadLocal,
+    // map in the child thread, the one contained in mdcAdapter.mdcThreadLocal,
     // is null. How strange is that?
 
     // let the map have lots of elements so that copying it takes time
@@ -181,8 +181,8 @@ public class LogbackMDCAdapterTest {
 
 
   Map<String, String> getMapFromMDCAdapter(LogbackMDCAdapter lma) {
-    InheritableThreadLocal<Map<String, String>> copyOnInheritThreadLocal = lma.copyOnInheritThreadLocal;
-    return copyOnInheritThreadLocal.get();
+    ThreadLocal<Map<String, String>> mdcThreadLocal = lma.mdcThreadLocal;
+    return mdcThreadLocal.get();
   }
 
   // ==========================    various thread classes
